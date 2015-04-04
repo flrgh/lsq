@@ -4,9 +4,11 @@ A miniature bash framework for querying the livestatus API
 ## Setup
 
 * Clone the repo (of course):
-```$ git clone https://github.com/michaeljmartin/lsq```
+```
+$ git clone https://github.com/michaeljmartin/lsq
+```
 
-* Create a file called ```.lsqrc``` in your home directory and set your variables:
+* Create an ```.lsqrc``` file in your home directory and set your variables:
 ```
 LSQ_BASEDIR=$HOME/lsq                 # Path to repo
 PORT=4000                             # Port livestatus is listening on
@@ -25,7 +27,7 @@ $ ln -s $HOME/lsq/lsq $HOME/bin/lsq
 * Add a livestatus query:
 
 ```
-$ cat > $HOME/lsq/queries/broken.lql <<EOF
+$ cat > lsq/queries/broken.lql <<EOF
 > GET services
 > Columns: host_name description state
 > Filter: state != 0
@@ -43,12 +45,12 @@ my_other_host;mysql;2
 
 As you can see, lsq takes the argument, looks for the corresponding ```.lql``` file, and runs that query against your monitor endpoints.
 
-Add a line to source ```lsq/lsq_completion.sh``` to your ```.bashrc```, and your query names will be tab-completed!
+Source ```lsq/lsq_completion.sh``` in your ```.bashrc```, and your query names will be tab-completed!
 
 ## Customization
 
 ### Post-processing
-If you find yourself commonly piping a query through some other commands to alter the presentation (sort it, beautify it, etc), add a ```.post``` script in the queries directory and have it read from ```stdin```:
+If you often find yourself piping a query through some other commands to alter the presentation (sort it, beautify it, etc), add a ```.post``` script in the queries directory and have it read from ```stdin```:
 
 ```
 $ cat > lsq/queries/broken.post <<EOF
@@ -57,6 +59,8 @@ $ cat > lsq/queries/broken.post <<EOF
 > EOF
 $ chmod u+x lsq/queries/broken.post
 ```
+
+(This doesn't have to be a shell script. You could write a post-processing script in python/ruby/perl--whatever you want)
 
 Now the output of your query is written out to that script:
 ```
@@ -74,6 +78,7 @@ This all works great for queries that are always the same. What if we want to do
 
 ```
 $ cat > lsq/queries/broken.pre <<EOF
+> #!/bin/bash
 > host=$1
 > cat $qfile                          # The $qfile variable here is exported by the primary lsq script and corresponds to your .lql file
 > echo "Filter: host_name = $host"
