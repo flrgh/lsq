@@ -1,8 +1,8 @@
 _list_queries(){
     [[ -e $HOME/.lsqrc ]] && . $HOME/.lsqrc
-    [[ -z ${BASEDIR} ]] && exit
-    [[ -d ${BASEDIR}/queries ]] || exit
-    queries=$(/bin/ls ${BASEDIR}/queries | grep -oE "^(.+)\.lql$" | sed 's/\.lql//')
+    [[ -z $LSQ_BASEDIR ]] && exit
+    [[ -d $LSQ_BASEDIR/queries ]] || exit
+    queries=$(/bin/ls $LSQ_BASEDIR/queries | grep -oE "^(.+)\.lql$" | sed 's/\.lql//')
 }
 
 _comp_queries(){
