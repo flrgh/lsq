@@ -46,7 +46,7 @@ fi
 
 for monitor in ${MONITORS[@]}; do
     outfile="$BASEDIR/tmp/$monitor.$$"
-    nc -w$TIMEOUT $monitor $PORT < <(echo "$query_text") > $outfile \
+    nc -w$TIMEOUT $monitor $PORT < <(echo "$query_text") > "$outfile" \
         || echo "ERROR: Failed to query monitor: $monitor" 1>&2 &
 done
 wait
