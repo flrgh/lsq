@@ -1,0 +1,64 @@
+#!/bin/bash
+
+query=$1
+shift
+
+if [[ -e $HOME/.lsqrc ]]; then
+    . $HOME/.lsqrc
+fi
+
+# Check them variables
+failed=0
+for var in query BASEDIR PORT TIMEOUT MONITORS; do
+    if [[ -z "$(eval echo \$$var)" ]]; then
+        echo "ERROR: no $var provided!"
+        failed=1
+    fi
+done
+
+if [[ $failed -eq 1 ]]; then
+    exit 1
+fi
+
+
+# Let's export $qfile to make it availble to any of the $query.pre scripts
+export qfile="$BASEDIR/queries/$query.lql"
+pre_qfile="$BASEDIR/queries/$query.pre"
+post_qfile="$BASEDIR/queries/$query.post"
+
+if [[ ! -f $qfile ]] ; then
+    echo "Query file for $query not found!"
+    exit 1
+fi
+
+
+if [[ -x $pre_qfile ]]; then
+    query_text=$($pre_qfile $@)
+    if [[ $? -ne 0 ]]; then
+        echo "Pre-query script exited with error:"
+        echo 
+        echo $query_text
+        exit 1
+    fi
+else
+    query_text=$(cat $qfile)
+fi
+
+for monitor in ${MONITORS[@]}; do
+    outfile="$BASEDIR/tmp/$monitor.$$"
+    nc -w$TIMEOUT $monitor $PORT < <(echo "$query_text") > $outfile \
+        || echo "ERROR: Failed to query monitor: $monitor" 1>&2 &
+done
+wait
+
+cmd="cat ${BASEDIR}/tmp/*.$$"
+
+
+if [[ -x $post_qfile ]]; then
+    cmd=$cmd"| $post_qfile"
+elif [[ -x $BASEDIR/queries/default.post ]]; then
+    cmd="$cmd | \"$BASEDIR/queries/default.post\""
+fi
+
+eval "$cmd"
+rm ${BASEDIR}/tmp/*.$$
