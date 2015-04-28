@@ -18,7 +18,7 @@ done
 
 if [[ $LSQ_BASEDIR =~ ^.*[\ ].*$ ]]; then
     echo "ERROR: Do not use an LSQ_BASEDIR with spaces in it!"
-    exit 1
+    failed=1
 fi
 
 if [[ $failed -eq 1 ]]; then
