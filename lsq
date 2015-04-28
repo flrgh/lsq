@@ -7,7 +7,7 @@ if [[ -e $HOME/.lsqrc ]]; then
     . $HOME/.lsqrc
 fi
 
-# Check them variables
+
 failed=0
 for var in query LSQ_BASEDIR PORT TIMEOUT MONITORS; do
     if [[ -z "$(eval echo \$$var)" ]]; then
@@ -26,7 +26,7 @@ if [[ $failed -eq 1 ]]; then
 fi
 
 
-# Let's export $qfile to make it availble to any of the $query.pre scripts
+# Export qfile because our pre-query script will need it
 export qfile="$LSQ_BASEDIR/queries/$query.lql"
 pre_qfile="$LSQ_BASEDIR/queries/$query.pre"
 post_qfile="$LSQ_BASEDIR/queries/$query.post"
