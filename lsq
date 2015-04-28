@@ -1,12 +1,23 @@
 #!/bin/bash
 
-query=$1
-shift
 
 if [[ -e $HOME/.lsqrc ]]; then
     . $HOME/.lsqrc
 fi
 
+query=$1
+# Shift $@ so we can hand the rest of it off to our pre-query script
+shift
+
+# Export qfile because our pre-query script will need it
+export qfile="$LSQ_BASEDIR/queries/$query.lql"
+pre_qfile="$LSQ_BASEDIR/queries/$query.pre"
+post_qfile="$LSQ_BASEDIR/queries/$query.post"
+
+
+#####################
+# Pre-flight checks #
+#####################
 
 failed=0
 for var in query LSQ_BASEDIR PORT TIMEOUT MONITORS; do
@@ -21,27 +32,25 @@ if [[ $LSQ_BASEDIR =~ ^.*[\ ].*$ ]]; then
     failed=1
 fi
 
+if [[ ! -f $qfile ]] ; then
+    echo "Query file for ($query) not found!"
+    failed=1
+fi
+
 if [[ $failed -eq 1 ]]; then
     exit 1
 fi
 
 
-# Export qfile because our pre-query script will need it
-export qfile="$LSQ_BASEDIR/queries/$query.lql"
-pre_qfile="$LSQ_BASEDIR/queries/$query.pre"
-post_qfile="$LSQ_BASEDIR/queries/$query.post"
-
-if [[ ! -f $qfile ]] ; then
-    echo "Query file for $query not found!"
-    exit 1
-fi
-
+##############
+# Main event #
+##############
 
 if [[ -x $pre_qfile ]]; then
     query_text=$($pre_qfile $@)
     if [[ $? -ne 0 ]]; then
         echo "Pre-query script exited with error:"
-        echo 
+        echo
         echo $query_text
         exit 1
     fi
