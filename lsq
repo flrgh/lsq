@@ -41,10 +41,24 @@ if [[ $failed -eq 1 ]]; then
     exit 1
 fi
 
+#############
+#  Helpers  #
+#############
+
+
+function cleanup {
+    shopt -s nullglob
+    for f in $LSQ_BASEDIR/tmp/*.$$;
+    do
+        rm -f "$f"
+    done
+}
 
 ##############
 # Main event #
 ##############
+
+trap cleanup EXIT SIGTERM SIGINT
 
 if [[ -x $pre_qfile ]]; then
     query_text=$($pre_qfile $@)
@@ -76,4 +90,3 @@ elif [[ -x $LSQ_BASEDIR/queries/default.post ]]; then
 fi
 
 eval "$cmd"
-rm $LSQ_BASEDIR/tmp/*.$$
