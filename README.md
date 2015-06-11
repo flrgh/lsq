@@ -24,7 +24,7 @@ $ ln -s $HOME/lsq/lsq $HOME/bin/lsq
 ```
 
 ## Basic Usage
-* Add a livestatus query:
+* Add a [livestatus query](http://mathias-kettner.de/checkmk_livestatus.html):
 
 ```
 $ cat > lsq/queries/broken.lql <<EOF
