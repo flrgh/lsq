@@ -47,11 +47,13 @@ fi
 
 
 function cleanup {
+    (
     shopt -s nullglob
     for f in $LSQ_BASEDIR/tmp/*.$$;
     do
         rm -f "$f"
     done
+    )
 }
 
 ##############
