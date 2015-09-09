@@ -60,12 +60,14 @@ function cleanup {
 
 trap cleanup EXIT SIGTERM SIGINT
 
+# Try a pre-query script and bail out if it fails with a non-zero exit status
 if [[ -x $pre_qfile ]]; then
     query_text=$($pre_qfile $@)
-    if [[ $? -ne 0 ]]; then
+    exit_status=$?
+    if [[ $exit_status -ne 0 ]]; then
         echo -ne "Pre-query script exited with error:\n\n"
         echo "$query_text"
-        exit 1
+        exit $exit_status
     fi
 else
     query_text=$(cat $qfile)
