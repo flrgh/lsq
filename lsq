@@ -63,9 +63,8 @@ trap cleanup EXIT SIGTERM SIGINT
 if [[ -x $pre_qfile ]]; then
     query_text=$($pre_qfile $@)
     if [[ $? -ne 0 ]]; then
-        echo "Pre-query script exited with error:"
-        echo
-        echo $query_text
+        echo -ne "Pre-query script exited with error:\n\n"
+        echo "$query_text"
         exit 1
     fi
 else
