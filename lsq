@@ -41,6 +41,10 @@ if [[ $failed -eq 1 ]]; then
     exit 1
 fi
 
+if [[ ! -d $LSQ_BASEDIR/tmp ]]; then
+    mkdir "$LSQ_BASEDIR/tmp"
+fi
+
 #############
 #  Helpers  #
 #############
@@ -75,7 +79,6 @@ else
     query_text=$(cat $qfile)
 fi
 
-[[ -d $LSQ_BASEDIR/tmp ]] || mkdir "$LSQ_BASEDIR/tmp"
 for monitor in ${MONITORS[@]}; do
     outfile="$LSQ_BASEDIR/tmp/$monitor.$$"
     printf "%s\n\n" "$query_text" \
