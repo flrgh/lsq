@@ -37,13 +37,13 @@ if [[ ! -f $qfile ]] ; then
     failed=1
 fi
 
-if [[ $failed -eq 1 ]]; then
-    exit 1
-fi
-
 LSQ_TMPDIR=$(mktemp -d)
 if [[ ! -d $LSQ_TMPDIR ]]; then
     echo "ERROR: Failed to create tmp directory"
+    failed=1
+fi
+
+if [[ $failed -eq 1 ]]; then
     exit 1
 fi
 
