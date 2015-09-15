@@ -41,7 +41,7 @@ if [[ $failed -eq 1 ]]; then
     exit 1
 fi
 
-LSQ_TMPDIR=$(mktmp -d)
+LSQ_TMPDIR=$(mktemp -d)
 if [[ ! -d $LSQ_TMPDIR ]]; then
     echo "ERROR: Failed to create tmp directory"
     exit 1
