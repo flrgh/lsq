@@ -41,23 +41,18 @@ if [[ $failed -eq 1 ]]; then
     exit 1
 fi
 
-if [[ ! -d $LSQ_BASEDIR/tmp ]]; then
-    mkdir "$LSQ_BASEDIR/tmp"
+LSQ_TMPDIR=$(mktmp -d)
+if [[ ! -d $LSQ_TMPDIR ]]; then
+    echo "ERROR: Failed to create tmp directory"
+    exit 1
 fi
 
 #############
 #  Helpers  #
 #############
 
-
 function cleanup {
-    (
-    shopt -s nullglob
-    for f in $LSQ_BASEDIR/tmp/*.$$;
-    do
-        rm -f "$f"
-    done
-    )
+    rm -rf "$LSQ_TMPDIR"
 }
 
 ##############
@@ -80,14 +75,14 @@ else
 fi
 
 for monitor in ${MONITORS[@]}; do
-    outfile="$LSQ_BASEDIR/tmp/$monitor.$$"
+    outfile="$LSQ_TMPDIR/$monitor.$$"
     printf "%s\n\n" "$query_text" \
         | nc -w$TIMEOUT $monitor $PORT > $outfile \
         || echo "ERROR: Failed to query monitor: $monitor" 1>&2 &
 done
 wait
 
-cmd="cat $LSQ_BASEDIR/tmp/*.$$"
+cmd="cat $LSQ_TMPDIR/*.$$"
 
 
 if [[ -x $post_qfile ]]; then
