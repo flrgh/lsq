@@ -20,30 +20,34 @@ post_qfile="$LSQ_BASEDIR/queries/$query.post"
 #####################
 
 failed=0
+error=""
+
 for var in query LSQ_BASEDIR PORT TIMEOUT MONITORS; do
     if [[ -z "$(eval echo \$$var)" ]]; then
-        echo "ERROR: no $var provided!"
+        error="${error}\n- No $var provided!"
         failed=1
     fi
 done
 
 if [[ $LSQ_BASEDIR =~ ^.*[\ ].*$ ]]; then
-    echo "ERROR: Do not use an LSQ_BASEDIR with spaces in it!"
+    error="${error}\n- Do not use an LSQ_BASEDIR with spaces in it!"
     failed=1
 fi
 
 if [[ ! -f $qfile ]] ; then
-    echo "Query file for ($query) not found!"
+    error="${error}\n- Query file for ($query) not found!"
     failed=1
 fi
 
 LSQ_TMPDIR=$(mktemp -d)
 if [[ ! -d $LSQ_TMPDIR ]]; then
-    echo "ERROR: Failed to create tmp directory"
+    error="${error}\n- Failed to create tmp directory"
     failed=1
 fi
 
 if [[ $failed -eq 1 ]]; then
+    echo "Uh-oh, we ran into some problems:"
+    echo -e $error
     exit 1
 fi
 
